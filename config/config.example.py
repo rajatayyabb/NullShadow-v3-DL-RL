@@ -20,7 +20,7 @@ DEFAULT_AI         = "claude"
 SCAN_TIMEOUT       = 30
 MAX_SUBDOMAINS     = 200
 REPORT_OUTPUT_DIR  = os.path.join(os.path.dirname(__file__), '..', 'reports')
-DB_PATH            = os.path.join(os.path.dirname(__file__), '..', 'database', 'nullshadow.db')
+DB_PATH            = os.path.join(os.path.dirname(__file__), '..', 'null_db', 'nullshadow.db')
 
 # ─── SUBDOMAIN WORDLIST ────────────────────────────────────────
 SUBDOMAIN_WORDLIST = [

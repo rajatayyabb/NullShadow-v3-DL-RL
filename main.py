@@ -24,7 +24,7 @@ try:
     from modules.ai.orchestrator import AutonomousOrchestrator
     from modules.pentesting.iot_sec import IoTSecurityModules
     from modules.reporting.report_generator import ReportGenerator
-    from database.db import ScanDatabase
+    from null_db.db import ScanDatabase
 except ImportError as e:
     # Fallback/Debug for import issues
     print(f"Error importing modules: {e}")

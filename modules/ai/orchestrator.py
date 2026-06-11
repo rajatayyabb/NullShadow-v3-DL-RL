@@ -17,7 +17,7 @@ try:
     from modules.pentesting.new_tools import NewPentestTools
     from modules.ai.ai_engine import AIEngine
     from modules.ai.deep_learning_engine import DeepLearningEngine
-    from database.db import ScanDatabase
+    from null_db.db import ScanDatabase
 except ImportError:
     # Fallback for direct module execution
     sys.path.append(os.getcwd())
@@ -26,7 +26,7 @@ except ImportError:
     from modules.pentesting.new_tools import NewPentestTools
     from modules.ai.ai_engine import AIEngine
     from modules.ai.deep_learning_engine import DeepLearningEngine
-    from database.db import ScanDatabase
+    from null_db.db import ScanDatabase
 
 console = Console()
 

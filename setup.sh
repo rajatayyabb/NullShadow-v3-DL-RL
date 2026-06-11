@@ -25,7 +25,7 @@ echo -e "\e[1;34m[*] Installing Python dependencies...\e[0m"
 pip3 install -r requirements.txt --break-system-packages
 
 echo -e "\e[1;34m[*] Creating directories...\e[0m"
-mkdir -p reports database models
+mkdir -p reports null_db models
 
 echo -e "\e[1;34m[*] Setting up configuration...\e[0m"
 if [ ! -f config/config.py ]; then

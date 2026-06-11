@@ -1,6 +1,6 @@
 config/config.py
-database/*
-!database/__init__.py
+null_db/*
+!null_db/__init__.py
 reports/*
 !reports/__init__.py
 models/*
