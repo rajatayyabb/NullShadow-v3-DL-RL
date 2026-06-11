@@ -86,17 +86,58 @@ class AIEngine:
         console.print(f"[yellow]Could not confirm model. Defaulting to {self.gemini_model}[/yellow]")
         return self.gemini_model
 
+    def _prompt_for_api_key(self, provider):
+        """Prompts the user for an API key and saves it to the local config file."""
+        console.print(Panel(
+            f"[bold yellow]⚠️ MISSING API KEY FOR {provider.upper()}[/bold yellow]\n"
+            f"[dim]To use AI features, please provide your private API key.\n"
+            f"This key will be saved locally in config/config.py and will not be shared.[/dim]",
+            border_style="yellow"
+        ))
+        key_name = {
+            "claude": "ANTHROPIC_API_KEY",
+            "openai": "OPENAI_API_KEY",
+            "gemini": "GEMINI_API_KEY"
+        }.get(provider)
+        
+        new_key = Prompt.ask(f"Paste your {provider.upper()} API Key", password=True)
+        if new_key and len(new_key) > 10:
+            # Update the live module
+            import config.config as _cfg
+            setattr(_cfg, key_name, new_key)
+            os.environ[key_name] = new_key
+            
+            # Update the physical file config/config.py
+            config_path = os.path.join(os.path.dirname(__file__), '..', '..', 'config', 'config.py')
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    lines = f.readlines()
+                with open(config_path, 'w') as f:
+                    for line in lines:
+                        if line.startswith(f"{key_name} ="):
+                            f.write(f"{key_name} = \"{new_key}\"\n")
+                        else:
+                            f.write(line)
+            
+            # Reload global keys in this module
+            global ANTHROPIC_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY
+            if provider == "claude": ANTHROPIC_API_KEY = new_key
+            elif provider == "openai": OPENAI_API_KEY = new_key
+            elif provider == "gemini": GEMINI_API_KEY = new_key
+            
+            self.active_ai = provider
+            console.print(f"[green]✓ {provider.upper()} API Key saved and activated![/green]")
+            return True
+        return False
+
     def analyze(self, prompt, system_prompt=None, show_output=True):
         if not self.active_ai:
-            console.print(
-                "[red]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-                "  NO AI KEY CONFIGURED\n\n"
-                "  Edit: config/config.py\n"
-                "  GEMINI_API_KEY = 'AIza...'\n\n"
-                "  Free key: https://aistudio.google.com/app/apikey\n"
-                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/red]"
-            )
-            return "No AI key configured."
+            console.print("[yellow]No AI engine active. Which one would you like to use?[/yellow]")
+            console.print("  [1] Claude (Anthropic)\n  [2] GPT-4 (OpenAI)\n  [3] Gemini (Google)")
+            choice = Prompt.ask("Select", choices=["1", "2", "3"])
+            provider = {"1": "claude", "2": "openai", "3": "gemini"}[choice]
+            if not self._prompt_for_api_key(provider):
+                return "AI analysis cancelled: No API key provided."
 
         if system_prompt is None:
             system_prompt = (

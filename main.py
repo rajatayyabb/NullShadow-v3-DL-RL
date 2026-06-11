@@ -156,9 +156,13 @@ def switch_ai():
             "openai": _cfg.OPENAI_API_KEY,
             "gemini": _cfg.GEMINI_API_KEY,
         }
-        if not key_check[selected] or not key_check[selected].strip():
-            console.print(f"[red]No API key set for {selected.upper()}. Add it to config/config.py or use option [4].[/red]")
-            return
+        if not key_check[selected] or not key_check[selected].strip() or "paste-your" in key_check[selected]:
+            if ai._prompt_for_api_key(selected):
+                # Reload the keys from the config module after prompting
+                import config.config as _cfg
+                ai.set_ai(selected)
+            else:
+                return
         ai.set_ai(selected)
         if selected == "gemini":
             ai.gemini_model = None  # force model re-detection
