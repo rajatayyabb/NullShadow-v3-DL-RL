@@ -29,15 +29,15 @@ class AIEngine:
 
     def _detect_available_ai(self):
         """Detect first available AI by checking key is non-empty and not a placeholder."""
-        placeholders = {"", "paste-your-claude-key-here", "paste-your-gemini-key-here",
-                        "paste-your-openai-key-here", "your-claude-key", "your-gemini-key",
-                        "your-openai-key"}
-        if ANTHROPIC_API_KEY and ANTHROPIC_API_KEY.strip() not in placeholders:
-            return "claude"
-        if GEMINI_API_KEY and GEMINI_API_KEY.strip() not in placeholders:
-            return "gemini"
-        if OPENAI_API_KEY and OPENAI_API_KEY.strip() not in placeholders:
-            return "openai"
+        def is_valid(key):
+            if not key: return False
+            k = key.strip().lower()
+            placeholders = ["", "paste-your", "your-", "key-here", "sk-...", "insert"]
+            return not any(p in k for p in placeholders) and len(k) > 15
+
+        if is_valid(ANTHROPIC_API_KEY): return "claude"
+        if is_valid(GEMINI_API_KEY): return "gemini"
+        if is_valid(OPENAI_API_KEY): return "openai"
         return None
 
     def set_ai(self, ai_name):
@@ -279,8 +279,13 @@ class AIEngine:
 
     def interactive_chat(self, context=""):
         if not self.active_ai:
-            console.print("[red]No AI key in config/config.py[/red]")
-            return
+            console.print("[yellow]No AI engine active for chat. Which one would you like to use?[/yellow]")
+            console.print("  [1] Claude (Anthropic)\n  [2] GPT-4 (OpenAI)\n  [3] Gemini (Google)")
+            choice = Prompt.ask("Select", choices=["1", "2", "3"])
+            provider = {"1": "claude", "2": "openai", "3": "gemini"}[choice]
+            if not self._prompt_for_api_key(provider):
+                return
+            self.active_ai = provider
 
         console.print(Panel(
             f"[cyan]AI Chat — {self.active_ai.upper()}\n"
