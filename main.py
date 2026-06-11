@@ -1,6 +1,10 @@
 import sys
 import os
-sys.path.insert(0, os.path.dirname(__file__))
+
+# Robust path detection for the project root
+project_root = os.path.abspath(os.path.dirname(__file__))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 from rich.console import Console
 from rich.panel import Panel
@@ -9,16 +13,23 @@ from rich.text import Text
 from rich.prompt import Prompt
 from rich.columns import Columns
 
-from modules.pentesting.scanner import AdvancedPentestModules
-from modules.pentesting.new_tools import NewPentestTools
-from modules.osint.osint_tools import OSINTModules
-from modules.utilities.util_tools import UtilityModules
-from modules.ai.ai_engine import AIEngine
-from modules.recon.recon_pipeline import ReconPipeline
-from modules.ai.orchestrator import AutonomousOrchestrator
-from modules.pentesting.iot_sec import IoTSecurityModules
-from modules.reporting.report_generator import ReportGenerator
-from database.db import ScanDatabase
+# Use absolute imports from the project root
+try:
+    from modules.pentesting.scanner import AdvancedPentestModules
+    from modules.pentesting.new_tools import NewPentestTools
+    from modules.osint.osint_tools import OSINTModules
+    from modules.utilities.util_tools import UtilityModules
+    from modules.ai.ai_engine import AIEngine
+    from modules.recon.recon_pipeline import ReconPipeline
+    from modules.ai.orchestrator import AutonomousOrchestrator
+    from modules.pentesting.iot_sec import IoTSecurityModules
+    from modules.reporting.report_generator import ReportGenerator
+    from database.db import ScanDatabase
+except ImportError as e:
+    # Fallback/Debug for import issues
+    print(f"Error importing modules: {e}")
+    print(f"Current sys.path: {sys.path}")
+    sys.exit(1)
 
 console  = Console()
 pentest  = AdvancedPentestModules()

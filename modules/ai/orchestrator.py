@@ -1,5 +1,8 @@
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+# Add the project root to sys.path using absolute path detection
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 import json
 import time
@@ -7,12 +10,23 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
 
-from modules.recon.recon_pipeline import ReconPipeline
-from modules.pentesting.scanner import AdvancedPentestModules
-from modules.pentesting.new_tools import NewPentestTools
-from modules.ai.ai_engine import AIEngine
-from modules.ai.deep_learning_engine import DeepLearningEngine
-from database.db import ScanDatabase
+# Use absolute imports from the project root
+try:
+    from modules.recon.recon_pipeline import ReconPipeline
+    from modules.pentesting.scanner import AdvancedPentestModules
+    from modules.pentesting.new_tools import NewPentestTools
+    from modules.ai.ai_engine import AIEngine
+    from modules.ai.deep_learning_engine import DeepLearningEngine
+    from database.db import ScanDatabase
+except ImportError:
+    # Fallback for direct module execution
+    sys.path.append(os.getcwd())
+    from modules.recon.recon_pipeline import ReconPipeline
+    from modules.pentesting.scanner import AdvancedPentestModules
+    from modules.pentesting.new_tools import NewPentestTools
+    from modules.ai.ai_engine import AIEngine
+    from modules.ai.deep_learning_engine import DeepLearningEngine
+    from database.db import ScanDatabase
 
 console = Console()
 
