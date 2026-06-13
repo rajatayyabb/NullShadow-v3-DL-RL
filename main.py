@@ -57,8 +57,17 @@ def display_banner():
                   [ Developed by Tayyab  |  github.com/rajatayyabb ]
     """
     console.print(Text(banner, style="bold red"))
+    # Show whether the local AI server is reachable (health endpoint)
+    try:
+        server_up = False
+        if hasattr(ai, 'local_ai') and getattr(ai.local_ai, '_is_server_available', None):
+            server_up = ai.local_ai._is_server_available()
+        server_status = "[green]● Local AI server[/green]" if server_up else "[yellow]● Local fallback[/yellow]"
+    except Exception:
+        server_status = "[yellow]● Local fallback[/yellow]"
+
     ai_status = f"[green]●[/green] {ai.active_ai.upper()}" if ai.active_ai else "[red]● NO AI KEY[/red]"
-    console.print(f"  AI Engine: {ai_status}     DB: [green]●[/green] Connected     Version: [cyan]v3.0 (DL/RL Enhanced)[/cyan]  Tools: [yellow]23[/yellow]\n", justify="center")
+    console.print(f"  AI Engine: {ai_status}   {server_status}     DB: [green]●[/green] Connected     Version: [cyan]v3.0 (DL/RL Enhanced)[/cyan]  Tools: [yellow]23[/yellow]\n", justify="center")
 
 
 def display_menu():
