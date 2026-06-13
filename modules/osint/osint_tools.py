@@ -4,8 +4,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 import requests
 import socket
 import threading
-import phonenumbers
-from phonenumbers import geocoder, carrier
+
+try:
+    import phonenumbers
+    from phonenumbers import geocoder, carrier
+except ImportError:
+    phonenumbers = None
+    geocoder = None
+    carrier = None
 from rich.table import Table
 from rich.console import Console
 
@@ -227,6 +233,10 @@ class OSINTModules:
         table = Table(title=f"Phone Lookup: {number}", header_style="bold yellow")
         table.add_column("Field", style="cyan", width=22)
         table.add_column("Value", style="white")
+        if not phonenumbers:
+            table.add_row("Error", "[red]phonenumbers package not installed.[/red] Install it with `pip install phonenumbers`.")
+            return table
+
         try:
             parsed = phonenumbers.parse(number, None)
             num_type_map = {
@@ -236,8 +246,8 @@ class OSINTModules:
             }
             num_type = phonenumbers.number_type(parsed)
             table.add_row("Valid",                str(phonenumbers.is_valid_number(parsed)))
-            table.add_row("Country",              geocoder.description_for_number(parsed, "en") or "N/A")
-            table.add_row("Carrier",              carrier.name_for_number(parsed, "en") or "N/A")
+            table.add_row("Country",              geocoder.description_for_number(parsed, "en") if geocoder else "N/A")
+            table.add_row("Carrier",              carrier.name_for_number(parsed, "en") if carrier else "N/A")
             table.add_row("Number Type",          num_type_map.get(num_type, str(num_type)))
             table.add_row("E.164 Format",         phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164))
             table.add_row("International Format", phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.INTERNATIONAL))

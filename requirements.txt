@@ -21,6 +21,9 @@ numpy>=1.23.0
 scapy>=2.5.0
 dnspython>=2.3.0
 pycurl>=7.45.0
+python-nmap>=0.7.4
+phonenumbers>=8.13.0
+python-whois>=0.7.3
 
 # Cryptography & Security
 pycryptodome>=3.16.0

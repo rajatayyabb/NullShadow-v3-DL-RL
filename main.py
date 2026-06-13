@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 
 # Robust path detection for the project root
 project_root = os.path.abspath(os.path.dirname(__file__))
@@ -357,6 +358,9 @@ def main():
         else:
             console.print("[red]Invalid choice.[/red]")
             time.sleep(1)
+
+        # Pause after handling a choice so output remains visible before menu redraw
+        input("\nPress Enter to return to menu...")
 
 if __name__ == "__main__":
     main()

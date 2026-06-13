@@ -26,9 +26,9 @@ class AIEngine:
 
     def __init__(self):
         self.conversation_history = []
-        self.active_ai = "openai"
         self.local_ai = NullShadowAIEngine()
         self.gemini_model = None  # will be auto-detected on first use
+        self.active_ai = self._detect_available_ai() or "local"
 
     def _detect_available_ai(self):
         """Detect first available AI by checking key is non-empty and not a placeholder."""
@@ -163,10 +163,8 @@ class AIEngine:
                 response = self._openai(system_prompt)
             elif self.active_ai == "gemini":
                 response = self._gemini(system_prompt)
-            elif self.active_ai == "local":
-                response = self.local_ai.chat_unlimited(prompt, system_prompt)
             else:
-                response = "Unknown AI provider."
+                response = self.local_ai.chat_unlimited(prompt, system_prompt)
         except Exception as e:
             response = f"[AI Error] {e}"
 
@@ -291,15 +289,6 @@ class AIEngine:
             return f"Gemini error: {e}"
 
     def interactive_chat(self, context=""):
-        if not self.active_ai:
-            console.print("[yellow]No AI engine active for chat. Which one would you like to use?[/yellow]")
-            console.print("  [1] Claude (Anthropic)\n  [2] GPT-4 (OpenAI)\n  [3] Gemini (Google)")
-            choice = Prompt.ask("Select", choices=["1", "2", "3"])
-            provider = {"1": "claude", "2": "openai", "3": "gemini"}[choice]
-            if not self._prompt_for_api_key(provider):
-                return
-            self.active_ai = provider
-
         console.print(Panel(
             f"[cyan]AI Chat — {self.active_ai.upper()}\n"
             "[yellow]Ask anything. Type 'exit' to go back.[/yellow]",
