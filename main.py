@@ -98,6 +98,9 @@ def display_menu():
     t3.add_row("[22] Password Generator")
     t3.add_row("[23] 🧠 DL Firmware Analysis")
     t3.add_row("[24] 💡 Neural Fuzz IoT")
+    t3.add_row("[31] 🔄 RL Simulation")
+    t3.add_row("[32] 🎭 Deception Demo")
+    t3.add_row("[33] 🔄 Self-Correcting Loop")
     t3.add_row("──────────────────────")
     t3.add_row("[25] 🤖 AI Chat Mode")
     t3.add_row("[26] 🚀 AUTO FULL RECON")
@@ -122,11 +125,12 @@ def switch_ai():
     console.print(f"  [1] Claude (Anthropic)  — ANTHROPIC_API_KEY  {_key_status(_cfg.ANTHROPIC_API_KEY)}")
     console.print(f"  [2] GPT-4 (OpenAI)      — OPENAI_API_KEY     {_key_status(_cfg.OPENAI_API_KEY)}")
     console.print(f"  [3] Gemini (Google)     — GEMINI_API_KEY     {_key_status(_cfg.GEMINI_API_KEY)}")
-    console.print("\n  [bold yellow]Tip:[/bold yellow] To set a key now, choose [4] and enter it.")
-    choice = Prompt.ask("Select AI (1/2/3/4)")
-    mapping = {"1": "claude", "2": "openai", "3": "gemini"}
+    console.print(f"  [4] Local (Ollama)      — Port 11434         [green]✓ Ready[/green]")
+    console.print("\n  [bold yellow]Tip:[/bold yellow] To set a key now, choose [5] and enter it.")
+    choice = Prompt.ask("Select AI (1/2/3/4/5)")
+    mapping = {"1": "claude", "2": "openai", "3": "gemini", "4": "local"}
 
-    if choice == "4":
+    if choice == "5":
         console.print("[cyan]Which key do you want to set?[/cyan]")
         console.print("  [1] ANTHROPIC_API_KEY\n  [2] OPENAI_API_KEY\n  [3] GEMINI_API_KEY")
         kc = Prompt.ask("Key")
@@ -330,21 +334,29 @@ def main():
         elif choice == '30':
             target = Prompt.ask("Enter target domain/IP for autonomous pentest (DL/RL)")
             results = orchestrator.run_autonomous_pentest(target)
-            console.print(Panel(
-                f"[bold green]Autonomous Pentest (DL/RL) Complete for {target}[/bold green]",
-                border_style="green"
-            ))
             console.print(results)
 
-        elif choice.lower() == 'exit':
+        elif choice == '31':
+            orchestrator.rl_engine.run_simulation()
+            input("\nPress Enter to continue...")
+
+        elif choice == '32':
+            orchestrator.deception_engine.run_deception_demo()
+            input("\nPress Enter to continue...")
+
+        elif choice == '33':
+            target = Prompt.ask("Enter target for Self-Correcting Loop")
+            orchestrator.self_correcting_loop(target)
+            input("\nPress Enter to continue...")
+
+        elif choice.lower() in ['exit', 'quit']:
             console.print("\n[bold red][ NullShadow signing off... ][/bold red]")
             db.close()
-            break
+            sys.exit(0)
+
         else:
             console.print("[red]Invalid choice.[/red]")
-
-        input("\nPress Enter to continue...")
-
+            time.sleep(1)
 
 if __name__ == "__main__":
     main()

@@ -6,7 +6,9 @@ import json
 from rich.console import Console
 from rich.panel import Panel
 from rich.markdown import Markdown
+from rich.prompt import Prompt
 from config.config import ANTHROPIC_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY
+from modules.ai.local_ai_engine import NullShadowAIEngine
 
 console = Console()
 
@@ -24,20 +26,24 @@ class AIEngine:
 
     def __init__(self):
         self.conversation_history = []
-        self.active_ai = self._detect_available_ai()
+        self.active_ai = "openai"
+        self.local_ai = NullShadowAIEngine()
         self.gemini_model = None  # will be auto-detected on first use
 
     def _detect_available_ai(self):
         """Detect first available AI by checking key is non-empty and not a placeholder."""
-        def is_valid(key):
-            if not key: return False
+        def is_valid(key, env_name=None):
+            if not key:
+                if env_name:
+                    key = os.getenv(env_name)
+                if not key: return False
             k = key.strip().lower()
             placeholders = ["", "paste-your", "your-", "key-here", "sk-...", "insert"]
-            return not any(p in k for p in placeholders) and len(k) > 15
+            return not any(p in k for p in placeholders) and (len(k) > 15 or env_name == "OPENAI_API_KEY")
 
-        if is_valid(ANTHROPIC_API_KEY): return "claude"
-        if is_valid(GEMINI_API_KEY): return "gemini"
-        if is_valid(OPENAI_API_KEY): return "openai"
+        if is_valid(ANTHROPIC_API_KEY, "ANTHROPIC_API_KEY"): return "claude"
+        if is_valid(GEMINI_API_KEY, "GEMINI_API_KEY"): return "gemini"
+        if is_valid(OPENAI_API_KEY, "OPENAI_API_KEY"): return "openai"
         return None
 
     def set_ai(self, ai_name):
@@ -157,6 +163,8 @@ class AIEngine:
                 response = self._openai(system_prompt)
             elif self.active_ai == "gemini":
                 response = self._gemini(system_prompt)
+            elif self.active_ai == "local":
+                response = self.local_ai.chat_unlimited(prompt, system_prompt)
             else:
                 response = "Unknown AI provider."
         except Exception as e:
@@ -197,11 +205,13 @@ class AIEngine:
 
     def _openai(self, system_prompt):
         try:
+            api_key = OPENAI_API_KEY or os.getenv("OPENAI_API_KEY")
+            api_base = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
             r = requests.post(
-                "https://api.openai.com/v1/chat/completions",
-                headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
+                f"{api_base}/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
                 json={
-                    "model": "gpt-4o",
+                    "model": "gpt-4.1-mini",
                     "messages": [{"role": "system", "content": system_prompt}] + self.conversation_history,
                     "max_tokens": 2048
                 },
@@ -209,7 +219,10 @@ class AIEngine:
             )
             if r.status_code != 200:
                 return f"OpenAI error {r.status_code}: {r.text[:300]}"
-            return r.json()["choices"][0]["message"]["content"]
+            data = r.json()
+            if "choices" in data:
+                return data["choices"][0]["message"]["content"]
+            return f"OpenAI unexpected response: {json.dumps(data)}"
         except Exception as e:
             return f"OpenAI error: {e}"
 

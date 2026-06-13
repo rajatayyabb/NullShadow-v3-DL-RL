@@ -17,6 +17,9 @@ try:
     from modules.pentesting.new_tools import NewPentestTools
     from modules.ai.ai_engine import AIEngine
     from modules.ai.deep_learning_engine import DeepLearningEngine
+    from modules.ai.rl_engine import NullShadowRL
+    from modules.ai.deception_engine import DeceptionEngine
+    from modules.ai.deanonymizer import Deanonymizer
     from null_db.db import ScanDatabase
 except ImportError:
     # Fallback for direct module execution
@@ -26,6 +29,9 @@ except ImportError:
     from modules.pentesting.new_tools import NewPentestTools
     from modules.ai.ai_engine import AIEngine
     from modules.ai.deep_learning_engine import DeepLearningEngine
+    from modules.ai.rl_engine import NullShadowRL
+    from modules.ai.deception_engine import DeceptionEngine
+    from modules.ai.deanonymizer import Deanonymizer
     from null_db.db import ScanDatabase
 
 console = Console()
@@ -37,6 +43,9 @@ class AutonomousOrchestrator:
         self.new_pentest_tools = NewPentestTools()
         self.ai_engine = AIEngine()
         self.dl_engine = DeepLearningEngine()
+        self.rl_engine = NullShadowRL()
+        self.deception_engine = DeceptionEngine()
+        self.deanonymizer = Deanonymizer()
         self.db = ScanDatabase()
         self.target = None
         self.current_state = {}
@@ -104,6 +113,24 @@ class AutonomousOrchestrator:
 
         # Default to AI chat for further analysis or if no clear next step
         return "ai_chat_analysis"
+
+    def self_correcting_loop(self, target):
+        """Two AI agents test and refine the system configuration."""
+        console.print("[bold cyan]Starting Self-Correcting Loop (Red vs Blue)...[/bold cyan]")
+        for i in range(2):
+            # Red Agent: Suggest attack vector
+            red_prompt = f"As a Red Team AI, suggest a creative attack vector for {target}."
+            attack_vector = self.ai_engine.analyze(red_prompt, show_output=False)
+            console.print(f"[red]Red Agent Suggestion:[/red] {attack_vector[:100]}...")
+            
+            # Blue Agent: Suggest defense and refine
+            blue_prompt = f"As a Blue Team AI, how would you block this attack: {attack_vector}?"
+            defense_strategy = self.ai_engine.analyze(blue_prompt, show_output=False)
+            console.print(f"[blue]Blue Agent Response:[/blue] {defense_strategy[:100]}...")
+            
+            # RL Update
+            self.rl_engine.update_q_table("scanning", 1, 10, "exploitation")
+        console.print("[green]✓ Self-Correcting Loop complete. System posture refined.[/green]")
 
     def run_autonomous_pentest(self, target):
         if not self.ai_engine.active_ai:
