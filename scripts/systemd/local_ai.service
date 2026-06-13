@@ -1,0 +1,13 @@
+[Unit]
+Description=NullShadow Local AI Mock Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/nullshadow
+ExecStart=/usr/bin/python3 /opt/nullshadow/scripts/local_ai_server.py
+Restart=on-failure
+User=nullshadow
+
+[Install]
+WantedBy=multi-user.target
