@@ -5,6 +5,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/opt/nullshadow
+EnvironmentFile=/etc/default/local_ai_proxy
 ExecStart=/usr/bin/python3 /opt/nullshadow/scripts/local_ai_proxy.py
 Restart=on-failure
 User=nullshadow

@@ -5,6 +5,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/opt/nullshadow
+EnvironmentFile=/etc/default/nullshadow
 ExecStart=/usr/bin/python3 /opt/nullshadow/main.py
 Restart=on-failure
 User=nullshadow

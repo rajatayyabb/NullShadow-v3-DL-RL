@@ -105,6 +105,51 @@ curl -s -X POST http://localhost:11434/api/chat -H "Content-Type: application/js
 
 When the mock server is running, start NullShadow with `python3 main.py` and the banner will indicate `Local AI server` when reachable.
 
+---
+
+## Ollama (recommended for company demo)
+
+Use Ollama to host a local model server that NullShadow can query at `LOCAL_AI_URL` (default port `11434`). Below are example commands for a Linux demo environment.
+
+1) Install Ollama (official installer):
+
+```bash
+curl -sSfL https://ollama.com/install.sh | sh
+```
+
+2) Pull or install a model (replace with the model you want):
+
+```bash
+ollama pull <model-name>
+# example: ollama pull meta/llama-2-7b
+```
+
+3) Start the Ollama server (defaults to port 11434):
+
+```bash
+ollama serve &
+# or run in foreground for logs:
+ollama serve
+```
+
+4) Configure NullShadow to point to the local Ollama server (optional env export):
+
+```bash
+export LOCAL_AI_URL=http://localhost:11434
+export LOCAL_AI_TOKEN="your_ollama_token"  # if required
+```
+
+5) Verify health and chat (quick smoke test):
+
+```bash
+curl http://localhost:11434/api/health
+curl -s -X POST http://localhost:11434/api/chat -H "Content-Type: application/json" -d '{"model":"<model-name>","messages":[{"role":"user","content":"hello"}]}'
+```
+
+Notes:
+- Replace `<model-name>` with the Ollama model ID you choose.
+- For production demos, run Ollama as a systemd service or inside Docker; see `docker-compose.yml` and `scripts/systemd/local_ai.service` for examples included in this repo.
+
 
 ---
 
