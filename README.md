@@ -81,6 +81,31 @@ sudo ./setup.sh
 python3 main.py
 ```
 
+### Local AI (development mock)
+
+If you don't have a local LLM service running, use the included lightweight mock server for development and testing. This mock implements the minimal endpoints expected by NullShadow:
+
+- `GET /api/health` -> returns HTTP 200 with `{ "status": "ok" }`
+- `POST /api/chat` -> accepts `{ "model": "...", "messages": [...] }` and returns `{ "message": { "content": "..." } }`
+
+To run the mock server (no dependencies required):
+
+```bash
+python3 scripts/local_ai_server.py
+```
+
+Quick tests:
+
+```bash
+curl http://localhost:11434/api/health
+
+curl -s -X POST http://localhost:11434/api/chat -H "Content-Type: application/json" \
+  -d '{"model":"test","messages":[{"role":"user","content":"hello"}]}'
+```
+
+When the mock server is running, start NullShadow with `python3 main.py` and the banner will indicate `Local AI server` when reachable.
+
+
 ---
 
 ## 🔑 API Keys Setup
