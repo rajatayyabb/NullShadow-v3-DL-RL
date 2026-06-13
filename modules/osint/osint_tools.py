@@ -239,8 +239,24 @@ class OSINTModules:
         table = Table(title=f"Phone Lookup: {number} (ENHANCED)", header_style="bold yellow")
         table.add_column("Field", style="cyan", width=22)
         table.add_column("Value", style="white")
+        
+        # If phonenumbers not available, use basic fallback
         if not phonenumbers:
-            table.add_row("Error", "[red]phonenumbers package not installed.[/red] Install it with `pip install phonenumbers`.")
+            table.add_row("Status", "[yellow]phonenumbers package not installed[/yellow]")
+            table.add_row("Install", "pip install phonenumbers")
+            table.add_row("Number", number)
+            
+            # Still try reverse lookup with API
+            table.add_row("─" * 20, "─" * 40)
+            table.add_row("[bold]REVERSE LOOKUP[/bold]", "[bold](Owner Info)[/bold]")
+            reverse_data = self._reverse_phone_lookup(number, NUMVERIFY_API_KEY)
+            if reverse_data:
+                table.add_row("Owner Name",       reverse_data.get("name", "N/A"))
+                table.add_row("Location",        reverse_data.get("location", "N/A"))
+                table.add_row("Line Type",       reverse_data.get("line_type", "N/A"))
+                table.add_row("Carrier",         reverse_data.get("carrier", "N/A"))
+                table.add_row("Valid",           reverse_data.get("valid", "N/A"))
+                table.add_row("Risk Status",     reverse_data.get("risk", "N/A"))
             return table
 
         try:
@@ -265,8 +281,6 @@ class OSINTModules:
             # Reverse lookup for detailed info
             table.add_row("─" * 20, "─" * 40)
             table.add_row("[bold]REVERSE LOOKUP[/bold]", "[bold](Owner Info)[/bold]")
-            
-            # Try NumVerify API (free tier: 100 requests/mo)
             reverse_data = self._reverse_phone_lookup(number, NUMVERIFY_API_KEY)
             
             if reverse_data:
@@ -276,10 +290,6 @@ class OSINTModules:
                 table.add_row("Carrier (Reverse)", reverse_data.get("carrier", "Not available"))
                 table.add_row("Valid (API)",     reverse_data.get("valid", "Unknown"))
                 table.add_row("Risk Status",     reverse_data.get("risk", "Unknown"))
-            else:
-                table.add_row("Owner Name",       "[yellow]Set NUMVERIFY_API_KEY to enable detailed lookup[/yellow]")
-                table.add_row("Location",        "[dim]Requires API key[/dim]")
-                table.add_row("Line Type",       "[dim]Requires API key[/dim]")
                 
         except Exception as e:
             table.add_row("Error", f"[red]{e}[/red]\n[yellow]Use format: +923001234567[/yellow]")
