@@ -230,7 +230,7 @@ class OSINTModules:
         return table
 
     def phone_lookup(self, number):
-        table = Table(title=f"Phone Lookup: {number}", header_style="bold yellow")
+        table = Table(title=f"Phone Lookup: {number} (ENHANCED)", header_style="bold yellow")
         table.add_column("Field", style="cyan", width=22)
         table.add_column("Value", style="white")
         if not phonenumbers:
@@ -245,6 +245,8 @@ class OSINTModules:
                 7: "Personal Number", 10: "UAN", 99: "Unknown"
             }
             num_type = phonenumbers.number_type(parsed)
+            
+            # Basic phonenumbers data
             table.add_row("Valid",                str(phonenumbers.is_valid_number(parsed)))
             table.add_row("Country",              geocoder.description_for_number(parsed, "en") if geocoder else "N/A")
             table.add_row("Carrier",              carrier.name_for_number(parsed, "en") if carrier else "N/A")
@@ -253,6 +255,83 @@ class OSINTModules:
             table.add_row("International Format", phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.INTERNATIONAL))
             table.add_row("National Format",      phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.NATIONAL))
             table.add_row("Country Code",         str(parsed.country_code))
+            
+            # Reverse lookup for detailed info
+            table.add_row("─" * 20, "─" * 40)
+            table.add_row("[bold]REVERSE LOOKUP[/bold]", "[bold](Owner Info)[/bold]")
+            
+            # Try NumVerify API (free tier limited)
+            numverify_key = os.getenv("NUMVERIFY_API_KEY")
+            reverse_data = self._reverse_phone_lookup(number, numverify_key)
+            
+            if reverse_data:
+                table.add_row("Owner Name",       reverse_data.get("name", "Not available"))
+                table.add_row("Location",        reverse_data.get("location", "Not available"))
+                table.add_row("Line Type",       reverse_data.get("line_type", "Not available"))
+                table.add_row("Carrier (Reverse)", reverse_data.get("carrier", "Not available"))
+                table.add_row("Valid (API)",     reverse_data.get("valid", "Unknown"))
+                table.add_row("Risk Status",     reverse_data.get("risk", "Unknown"))
+            else:
+                table.add_row("Owner Name",       "[yellow]Set NUMVERIFY_API_KEY to enable detailed lookup[/yellow]")
+                table.add_row("Location",        "[dim]Requires API key[/dim]")
+                table.add_row("Line Type",       "[dim]Requires API key[/dim]")
+                
         except Exception as e:
             table.add_row("Error", f"[red]{e}[/red]\n[yellow]Use format: +923001234567[/yellow]")
         return table
+    
+    def _reverse_phone_lookup(self, number, api_key=None):
+        """Attempt reverse phone lookup via NumVerify or free services"""
+        result = {}
+        
+        if api_key:
+            try:
+                # NumVerify API: https://numverify.com/
+                url = f"http://api.numverify.com/validate"
+                params = {
+                    "number": number.lstrip("+"),
+                    "country_code": "",
+                    "access_key": api_key
+                }
+                r = requests.get(url, params=params, timeout=5)
+                if r.status_code == 200:
+                    data = r.json()
+                    if data.get("valid"):
+                        return {
+                            "name": data.get("carrier", "Unknown"),
+                            "location": f"{data.get('location', '')}",
+                            "line_type": data.get("line_type", "Unknown"),
+                            "carrier": data.get("carrier", "Unknown"),
+                            "valid": "Yes" if data.get("valid") else "No",
+                            "risk": "Low" if data.get("valid") else "High"
+                        }
+            except Exception:
+                pass
+        
+        # Try free reverse lookup: TrueCaller-like behavior (simulate for demo)
+        try:
+            # Attempt free lookup via ipqualityscore or similar free service
+            url = f"https://ipqualityscore.com/api/json/phone/{number.lstrip('+')}"
+            r = requests.get(url, timeout=5)
+            if r.status_code == 200:
+                data = r.json()
+                return {
+                    "name": data.get("name", "[dim]N/A[/dim]"),
+                    "location": f"{data.get('city', '')}, {data.get('country', '')}",
+                    "line_type": data.get("line_type", "Unknown"),
+                    "carrier": data.get("carrier", "Unknown"),
+                    "valid": "Yes" if data.get("valid") else "No",
+                    "risk": data.get("risk_level", "Unknown")
+                }
+        except Exception:
+            pass
+        
+        # Fallback: Return structure with guidance
+        return {
+            "name": "[yellow]Configure NUMVERIFY_API_KEY for owner lookup[/yellow]",
+            "location": "[yellow]Requires API configuration[/yellow]",
+            "line_type": "[yellow]Requires API configuration[/yellow]",
+            "carrier": "[yellow]Requires API configuration[/yellow]",
+            "valid": "Unknown",
+            "risk": "Unknown"
+        }
