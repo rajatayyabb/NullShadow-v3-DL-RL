@@ -107,7 +107,6 @@ def display_menu():
     t3.add_row("[26] 🚀 AUTO FULL RECON")
     t3.add_row("[27] 📄 Generate PDF Report")
     t3.add_row("[28] 📊 Scan History")
-    t3.add_row("[29] ⚙️  Switch AI Engine")
     t3.add_row("──────────────────────")
     t3.add_row("[30] 🚀 AUTO PENTEST (DL/RL)")
 
@@ -117,60 +116,8 @@ def display_menu():
 
 
 def switch_ai():
-    from config import config as _cfg
-
-    def _key_status(key):
-        return "[green]✓ Key set[/green]" if key and key.strip() else "[red]✗ No key[/red]"
-
-    console.print("\n[cyan]Available AI engines:[/cyan]")
-    console.print(f"  [1] Claude (Anthropic)  — ANTHROPIC_API_KEY  {_key_status(_cfg.ANTHROPIC_API_KEY)}")
-    console.print(f"  [2] GPT-4 (OpenAI)      — OPENAI_API_KEY     {_key_status(_cfg.OPENAI_API_KEY)}")
-    console.print(f"  [3] Gemini (Google)     — GEMINI_API_KEY     {_key_status(_cfg.GEMINI_API_KEY)}")
-    console.print(f"  [4] Local (Ollama)      — Port 11434         [green]✓ Ready[/green]")
-    console.print("\n  [bold yellow]Tip:[/bold yellow] To set a key now, choose [5] and enter it.")
-    choice = Prompt.ask("Select AI (1/2/3/4/5)")
-    mapping = {"1": "claude", "2": "openai", "3": "gemini", "4": "local"}
-
-    if choice == "5":
-        console.print("[cyan]Which key do you want to set?[/cyan]")
-        console.print("  [1] ANTHROPIC_API_KEY\n  [2] OPENAI_API_KEY\n  [3] GEMINI_API_KEY")
-        kc = Prompt.ask("Key")
-        key_map = {"1": "ANTHROPIC_API_KEY", "2": "OPENAI_API_KEY", "3": "GEMINI_API_KEY"}
-        ai_map  = {"1": "claude",            "2": "openai",         "3": "gemini"}
-        if kc in key_map:
-            new_key = Prompt.ask(f"Paste your {key_map[kc]}", password=True)
-            # Inject into the live config module and environment
-            setattr(_cfg, key_map[kc], new_key)
-            import os
-            os.environ[key_map[kc]] = new_key
-            # Reload the key in the AI engine module
-            import modules.ai.ai_engine as _ae
-            setattr(_ae, key_map[kc].replace("ANTHROPIC_", "ANTHROPIC_").replace("OPENAI_", "OPENAI_").replace("GEMINI_", "GEMINI_"), new_key)
-            _ae.ANTHROPIC_API_KEY = _cfg.ANTHROPIC_API_KEY
-            _ae.OPENAI_API_KEY    = _cfg.OPENAI_API_KEY
-            _ae.GEMINI_API_KEY    = _cfg.GEMINI_API_KEY
-            ai.set_ai(ai_map[kc])
-            ai.gemini_model = None  # force re-detection
-            console.print(f"[green]✓ Key saved and switched to {ai_map[kc].upper()}[/green]")
-        return
-
-    if choice in mapping:
-        selected = mapping[choice]
-        key_check = {
-            "claude": _cfg.ANTHROPIC_API_KEY,
-            "openai": _cfg.OPENAI_API_KEY,
-            "gemini": _cfg.GEMINI_API_KEY,
-        }
-        if not key_check[selected] or not key_check[selected].strip() or "paste-your" in key_check[selected]:
-            if ai._prompt_for_api_key(selected):
-                # Reload the keys from the config module after prompting
-                import config.config as _cfg
-                ai.set_ai(selected)
-            else:
-                return
-        ai.set_ai(selected)
-        if selected == "gemini":
-            ai.gemini_model = None  # force model re-detection
+    console.print("\n[cyan]Local-only AI mode is active. No cloud API switching is available.[/cyan]")
+    ai.set_ai("local")
 
 
 def main():
@@ -181,7 +128,12 @@ def main():
         os.system("clear")
         display_banner()
         display_menu()
-        choice = Prompt.ask("[bold red]nullshadow[/bold red][white] > [/white]")
+        try:
+            choice = Prompt.ask("[bold red]nullshadow[/bold red][white] > [/white]")
+        except EOFError:
+            console.print("\n[red]Input stream closed. Exiting NullShadow.[/red]")
+            db.close()
+            sys.exit(0)
 
         # ── Pentesting ─────────────────────────────────────────
         if choice == '01':
@@ -330,7 +282,7 @@ def main():
             db.display_history()
 
         elif choice == '29':
-            switch_ai()
+            console.print("[yellow]Local-only AI mode is already active.[/yellow]")
 
         elif choice == '30':
             target = Prompt.ask("Enter target domain/IP for autonomous pentest (DL/RL)")
@@ -339,16 +291,16 @@ def main():
 
         elif choice == '31':
             orchestrator.rl_engine.run_simulation()
-            input("\nPress Enter to continue...")
+            Prompt.ask("\nPress Enter to continue", default="")
 
         elif choice == '32':
             orchestrator.deception_engine.run_deception_demo()
-            input("\nPress Enter to continue...")
+            Prompt.ask("\nPress Enter to continue", default="")
 
         elif choice == '33':
             target = Prompt.ask("Enter target for Self-Correcting Loop")
             orchestrator.self_correcting_loop(target)
-            input("\nPress Enter to continue...")
+            Prompt.ask("\nPress Enter to continue", default="")
 
         elif choice.lower() in ['exit', 'quit']:
             console.print("\n[bold red][ NullShadow signing off... ][/bold red]")
@@ -360,7 +312,12 @@ def main():
             time.sleep(1)
 
         # Pause after handling a choice so output remains visible before menu redraw
-        input("\nPress Enter to return to menu...")
+        try:
+            Prompt.ask("\nPress Enter to return to menu", default="")
+        except EOFError:
+            console.print("\n[red]Input stream closed. Exiting NullShadow.[/red]")
+            db.close()
+            sys.exit(0)
 
 if __name__ == "__main__":
     main()

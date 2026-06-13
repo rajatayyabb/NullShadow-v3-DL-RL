@@ -142,14 +142,7 @@ class AutonomousOrchestrator:
         console.print("[green]✓ Self-Correcting Loop complete. System posture refined.[/green]")
 
     def run_autonomous_pentest(self, target):
-        if not self.ai_engine.active_ai:
-            console.print("[yellow]No AI engine active for Autonomous Pentest. Which one would you like to use?[/yellow]")
-            console.print("  [1] Claude (Anthropic)\n  [2] GPT-4 (OpenAI)\n  [3] Gemini (Google)")
-            choice = Prompt.ask("Select", choices=["1", "2", "3"])
-            provider = {"1": "claude", "2": "openai", "3": "gemini"}[choice]
-            if not self.ai_engine._prompt_for_api_key(provider):
-                return {"status": "cancelled", "reason": "No API key provided"}
-
+        self.ai_engine.set_ai("local")
         self.target = target
         self.current_state = {"target": target}
         self.action_history = []
