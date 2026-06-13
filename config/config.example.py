@@ -15,6 +15,9 @@ SHODAN_API_KEY      = os.getenv("SHODAN_API_KEY",      "")
 HIBP_API_KEY        = os.getenv("HIBP_API_KEY",        "")
 ABUSEIPDB_API_KEY   = os.getenv("ABUSEIPDB_API_KEY",   "")
 
+# ─── OSINT API KEYS (optional) ─────────────────────────────────
+NUMVERIFY_API_KEY   = os.getenv("NUMVERIFY_API_KEY",   "")  # For phone number lookup
+
 # ─── TOOL SETTINGS ─────────────────────────────────────────────
 DEFAULT_AI         = "claude"
 SCAN_TIMEOUT       = 30

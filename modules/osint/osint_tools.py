@@ -12,6 +12,12 @@ except ImportError:
     phonenumbers = None
     geocoder = None
     carrier = None
+
+# Import API keys from config
+try:
+    from config.config import NUMVERIFY_API_KEY
+except ImportError:
+    NUMVERIFY_API_KEY = os.getenv("NUMVERIFY_API_KEY", "")
 from rich.table import Table
 from rich.console import Console
 
@@ -260,9 +266,8 @@ class OSINTModules:
             table.add_row("─" * 20, "─" * 40)
             table.add_row("[bold]REVERSE LOOKUP[/bold]", "[bold](Owner Info)[/bold]")
             
-            # Try NumVerify API (free tier limited)
-            numverify_key = os.getenv("NUMVERIFY_API_KEY")
-            reverse_data = self._reverse_phone_lookup(number, numverify_key)
+            # Try NumVerify API (free tier: 100 requests/mo)
+            reverse_data = self._reverse_phone_lookup(number, NUMVERIFY_API_KEY)
             
             if reverse_data:
                 table.add_row("Owner Name",       reverse_data.get("name", "Not available"))
