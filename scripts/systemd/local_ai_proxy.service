@@ -1,0 +1,14 @@
+[Unit]
+Description=NullShadow Local AI Proxy Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/nullshadow
+ExecStart=/usr/bin/python3 /opt/nullshadow/scripts/local_ai_proxy.py
+Restart=on-failure
+User=nullshadow
+Environment=PORT=11434
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=NullShadow Application Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/nullshadow
+ExecStart=/usr/bin/python3 /opt/nullshadow/main.py
+Restart=on-failure
+User=nullshadow
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
