@@ -10,6 +10,15 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
 
+def json_serializable(obj):
+    """Custom serializer for objects that are not naturally JSON serializable."""
+    try:
+        if hasattr(obj, '__dict__'):
+            return obj.__dict__
+        return str(obj)
+    except:
+        return "[Unserializable Object]"
+
 # Use absolute imports from the project root
 try:
     from modules.recon.recon_pipeline import ReconPipeline
@@ -206,7 +215,7 @@ class AutonomousOrchestrator:
                     # In a real scenario, the AI engine would process self.current_state
                     # and ask follow-up questions or suggest actions.
                     # For this 50% completion, we'll simulate an AI response.
-                    simulated_ai_response = self.ai_engine.analyze(f"Analyze the current state: {json.dumps(self.current_state, indent=2)}", show_output=False)
+                    simulated_ai_response = self.ai_engine.analyze(f"Analyze the current state: {json.dumps(self.current_state, indent=2, default=json_serializable)}", show_output=False)
                     console.print(Panel(
                         f"[bold green]🤖 AI Engine Suggestion:[/bold green]\n{simulated_ai_response[:500]}...",
                         border_style="green"

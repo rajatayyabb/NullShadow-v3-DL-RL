@@ -22,7 +22,13 @@ echo -e "\e[1;34m[*] Installing system packages...\e[0m"
 apt-get install -y python3 python3-pip nmap whois git
 
 echo -e "\e[1;34m[*] Installing Python dependencies...\e[0m"
-pip3 install -r requirements.txt --break-system-packages
+# Check for PEP 668 and use appropriate flags
+if grep -q "EXTERNALLY-MANAGED" /usr/lib/python3*/EXTERNALLY-MANAGED 2>/dev/null; then
+    echo -e "\e[1;33m[!] Externally managed environment detected. Using --break-system-packages...\e[0m"
+    pip3 install -r requirements.txt --break-system-packages --ignore-installed
+else
+    pip3 install -r requirements.txt
+fi
 
 echo -e "\e[1;34m[*] Creating directories...\e[0m"
 mkdir -p reports null_db models
