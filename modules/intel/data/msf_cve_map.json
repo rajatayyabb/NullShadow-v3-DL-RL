@@ -1,0 +1,93 @@
+{
+  "_comment": "Curated, OFFLINE map of well-known CVE ids to public exploit references (Metasploit module paths and/or advisory names). Reference/informational ONLY (Phase 3) - NullShadow does NOT generate or run exploit code. Extend this file with more entries as needed.",
+  "CVE-2017-0144": {
+    "name": "EternalBlue (MS17-010 SMBv1 RCE)",
+    "metasploit": ["exploit/windows/smb/ms17_010_eternalblue", "auxiliary/scanner/smb/smb_ms17_010"],
+    "references": ["https://www.exploit-db.com/exploits/42315", "https://nvd.nist.gov/vuln/detail/CVE-2017-0144"]
+  },
+  "CVE-2017-0143": {
+    "name": "MS17-010 SMBv1 RCE (EternalBlue family)",
+    "metasploit": ["exploit/windows/smb/ms17_010_eternalblue"],
+    "references": ["https://nvd.nist.gov/vuln/detail/CVE-2017-0143"]
+  },
+  "CVE-2017-0145": {
+    "name": "MS17-010 SMBv1 RCE (EternalBlue family)",
+    "metasploit": ["exploit/windows/smb/ms17_010_eternalblue"],
+    "references": ["https://nvd.nist.gov/vuln/detail/CVE-2017-0145"]
+  },
+  "CVE-2014-0160": {
+    "name": "Heartbleed (OpenSSL TLS heartbeat memory disclosure)",
+    "metasploit": ["auxiliary/scanner/ssl/openssl_heartbleed"],
+    "references": ["https://www.exploit-db.com/exploits/32745", "https://heartbleed.com/"]
+  },
+  "CVE-2014-6271": {
+    "name": "Shellshock (Bash environment variable RCE)",
+    "metasploit": ["exploit/multi/http/apache_mod_cgi_bash_env_exec", "auxiliary/scanner/http/apache_mod_cgi_bash_env"],
+    "references": ["https://www.exploit-db.com/exploits/34900"]
+  },
+  "CVE-2021-44228": {
+    "name": "Log4Shell (Apache Log4j2 JNDI RCE)",
+    "metasploit": ["exploit/multi/http/log4shell_header_injection"],
+    "references": ["https://www.exploit-db.com/exploits/50592", "https://logging.apache.org/log4j/2.x/security.html"]
+  },
+  "CVE-2021-45046": {
+    "name": "Apache Log4j2 (Log4Shell follow-up)",
+    "metasploit": ["exploit/multi/http/log4shell_header_injection"],
+    "references": ["https://logging.apache.org/log4j/2.x/security.html"]
+  },
+  "CVE-2019-0708": {
+    "name": "BlueKeep (RDP pre-auth RCE)",
+    "metasploit": ["exploit/windows/rdp/cve_2019_0708_bluekeep_rce", "auxiliary/scanner/rdp/cve_2019_0708_bluekeep"],
+    "references": ["https://nvd.nist.gov/vuln/detail/CVE-2019-0708"]
+  },
+  "CVE-2021-26855": {
+    "name": "ProxyLogon (Microsoft Exchange SSRF -> RCE chain)",
+    "metasploit": ["exploit/windows/http/exchange_proxylogon_rce"],
+    "references": ["https://proxylogon.com/", "https://nvd.nist.gov/vuln/detail/CVE-2021-26855"]
+  },
+  "CVE-2021-34473": {
+    "name": "ProxyShell (Microsoft Exchange RCE chain)",
+    "metasploit": ["exploit/windows/http/exchange_proxyshell_rce"],
+    "references": ["https://nvd.nist.gov/vuln/detail/CVE-2021-34473"]
+  },
+  "CVE-2017-5638": {
+    "name": "Apache Struts2 OGNL RCE (Content-Type)",
+    "metasploit": ["exploit/multi/http/struts2_content_type_ognl"],
+    "references": ["https://www.exploit-db.com/exploits/41570"]
+  },
+  "CVE-2018-7600": {
+    "name": "Drupalgeddon2 (Drupal RCE)",
+    "metasploit": ["exploit/unix/webapp/drupal_drupalgeddon2"],
+    "references": ["https://www.exploit-db.com/exploits/44449"]
+  },
+  "CVE-2012-1823": {
+    "name": "PHP-CGI query string argument injection",
+    "metasploit": ["exploit/multi/http/php_cgi_arg_injection"],
+    "references": ["https://www.exploit-db.com/exploits/18836"]
+  },
+  "CVE-2015-1635": {
+    "name": "HTTP.sys remote code execution (MS15-034)",
+    "metasploit": ["auxiliary/dos/http/ms15_034_ulonglongadd"],
+    "references": ["https://nvd.nist.gov/vuln/detail/CVE-2015-1635"]
+  },
+  "CVE-2008-4250": {
+    "name": "MS08-067 Server Service RCE (Conficker)",
+    "metasploit": ["exploit/windows/smb/ms08_067_netapi"],
+    "references": ["https://www.exploit-db.com/exploits/6841"]
+  },
+  "CVE-2019-19781": {
+    "name": "Citrix ADC / NetScaler path traversal RCE",
+    "metasploit": ["exploit/linux/http/citrix_dir_traversal_rce"],
+    "references": ["https://nvd.nist.gov/vuln/detail/CVE-2019-19781"]
+  },
+  "CVE-2022-22965": {
+    "name": "Spring4Shell (Spring Framework RCE)",
+    "metasploit": ["exploit/multi/http/spring_framework_rce_spring4shell"],
+    "references": ["https://nvd.nist.gov/vuln/detail/CVE-2022-22965"]
+  },
+  "CVE-2014-3704": {
+    "name": "Drupalgeddon (Drupal SQL injection)",
+    "metasploit": ["exploit/multi/http/drupal_drupageddon"],
+    "references": ["https://www.exploit-db.com/exploits/34992"]
+  }
+}
