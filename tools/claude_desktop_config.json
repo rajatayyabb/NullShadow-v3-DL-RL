@@ -1,0 +1,12 @@
+{
+  "_comment": "Example Claude Desktop MCP registration for the NullShadow MCP server (Phase 4). Copy the 'nullshadow' entry into your Claude Desktop config file: macOS ~/Library/Application Support/Claude/claude_desktop_config.json, Windows %APPDATA%/Claude/claude_desktop_config.json. Update the absolute paths to match your install, then fully restart Claude Desktop. Prefer the venv python (./venv/bin/python) so the 'mcp' package is available.",
+  "mcpServers": {
+    "nullshadow": {
+      "command": "/ABSOLUTE/PATH/TO/NullShadow/venv/bin/python",
+      "args": ["/ABSOLUTE/PATH/TO/NullShadow/mcp_server.py"],
+      "env": {
+        "LOCAL_AI_URL": "http://localhost:11434"
+      }
+    }
+  }
+}
