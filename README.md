@@ -16,9 +16,7 @@
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg?style=for-the-badge)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/platform-Kali%20Linux%20%7C%20Ubuntu-black.svg?style=for-the-badge)](https://www.kali.org/)
 
-*Developed by **Tayyab** — Final Year Project 2024*  
-*Enhanced by **Manus AI** — v3.0 Deep Learning Upgrade*
-
+*Developed by **Tayyab** — 
 </div>
 
 ---
